@@ -1,0 +1,2 @@
+# vagrant
+some vagrant config
