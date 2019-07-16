@@ -8,32 +8,36 @@
 Vagrant.configure("2") do |config|
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
 
-    config.vm.define "master" do |master|
+    config.vm.define "first" do |first|
 
-    master.vm.box = "Centos7.6"
-    master.vm.network "private_network", ip: "192.168.137.200"
-    master.vm.hostname="master"
+    first.vm.box = "Centos7.6"
+    first.disksize.size = "120GB"
+    first.vm.network "private_network", ip: "192.168.137.100"
+    first.vm.hostname="first"
 
-    master.vm.provider "virtualbox" do |vb|
-        vb.name = "master"
-        vb.memory = "8192"
-        vb.cpus = "4"
+    first.vm.provider "virtualbox" do |vb|
+        vb.name = "first"
+        vb.memory = "3072"
+        vb.cpus = "2"
     end
     # View the documentation for the provider you are using for more
 
-    master.vm.provision "shell", inline: <<-SHELL
+    first.vm.provision "shell", inline: <<-SHELL
     sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
     sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
-    sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
     sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
+    sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
     sudo yum update
-    sudo yum install python git python-pip vim net-tools -y
-    sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+    sudo yum install python git vim python-pip net-tools -y
+    sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com 
     sudo pip install ansible==2.6.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     sudo yum clean all
     sudo systemctl restart sshd
     sudo reboot
+    sudo route add default gw 192.168.137.1
     SHELL
     end
 
@@ -63,7 +67,7 @@ Vagrant.configure("2") do |config|
       # Create a private network, which allows host-only access to the machine
       # 仅主机 HostOnly 模式
       #node.vm.network "public_network", ip: "192.168.110.20#{i}"
-      node.vm.network "private_network", ip: "192.168.137.20#{i}"
+      node.vm.network "private_network", ip: "192.168.137.10#{i}"
       # Create a public network, which generally matched to bridged network.
       # Bridged networks make the machine appear as another physical device on
       # your network.
@@ -105,9 +109,10 @@ Vagrant.configure("2") do |config|
       sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
       sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
       sudo yum update
-      sudo yum install python net-tools -y
+      sudo yum install python -y
       sudo systemctl restart sshd
       sudo reboot
+      sudo route add default gw 192.168.137.1
       SHELL
       end
     end
