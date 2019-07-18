@@ -17,32 +17,36 @@ Vagrant.configure("2") do |config|
 
     master.vm.provider "virtualbox" do |vb|
         vb.name = "master"
-        vb.memory = "8192"
-        vb.cpus = "4"
+        vb.memory = "512"
+        vb.cpus = "1"
     end
     # View the documentation for the provider you are using for more
 
     master.vm.provision "shell", inline: <<-SHELL
     sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
     sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
-    sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
+    sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+    sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.cloud.tencent.com/repo/epel-7.repo
+    sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
+    sudo yum clean all && yum makecache && yum update
+    echo 123456 | sudo passwd root --stdin
     sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
-    sudo yum update
-    sudo yum install python git python-pip vim net-tools -y
+    sudo yum install python git python-pip vim net-tools wget -y
     sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     sudo pip install ansible==2.6.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     sudo yum clean all
     sudo systemctl restart sshd
     sudo reboot
+    sudo route add default gw 192.168.137.1
     SHELL
     end
 
 
   (1..2).each do |i|
-      config.vm.define "node#{i}" do |node|
+      config.vm.define "slave#{i}" do |slave|
 
-      node.vm.box = "Centos7.6"
-      node.disksize.size = "120GB"
+      slave.vm.box = "Centos7.6"
+      slave.disksize.size = "120GB"
 
       # Disable automatic box update checking. If you disable this, then
       # boxes will only be checked for updates when the user runs
@@ -62,8 +66,8 @@ Vagrant.configure("2") do |config|
 
       # Create a private network, which allows host-only access to the machine
       # 仅主机 HostOnly 模式
-      #node.vm.network "public_network", ip: "192.168.110.20#{i}"
-      node.vm.network "private_network", ip: "192.168.137.20#{i}"
+      #slave.vm.network "public_network", ip: "192.168.110.20#{i}"
+      slave.vm.network "private_network", ip: "192.168.137.20#{i}"
       # Create a public network, which generally matched to bridged network.
       # Bridged networks make the machine appear as another physical device on
       # your network.
@@ -77,21 +81,21 @@ Vagrant.configure("2") do |config|
       # the path on the guest to mount the folder. And the optional third
       # argument is a set of non-required options.
       # config.vm.synced_folder "../data", "/vagrant_data"
-      node.vm.hostname="node#{i}"
+      slave.vm.hostname="slave#{i}"
       # 共享目录
-      # node.vm.synced_folder "~/Desktop/share", "/home/vagrant/share"
+      # slave.vm.synced_folder "~/Desktop/share", "/home/vagrant/share"
 
       # Provider-specific configuration so you can fine-tune various
       # backing providers for Vagrant. These expose provider-specific options.
       # Example for VirtualBox:
       #
-      node.vm.provider "virtualbox" do |vb|
+      slave.vm.provider "virtualbox" do |vb|
       #   # Display the VirtualBox GUI when booting the machine
       #   vb.gui = true
       #
-         vb.name = "node#{i}"
-         vb.memory = "3072"
-         vb.cpus = "2"
+         vb.name = "slave#{i}"
+         vb.memory = "512"
+         vb.cpus = "1"
        end
       #
       # View the documentation for the provider you are using for more
@@ -100,14 +104,18 @@ Vagrant.configure("2") do |config|
       # Enable provisioning with a shell script. Additional provisioners such as
       # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
       # documentation for more information about their specific syntax and use.
-      node.vm.provision "shell", inline: <<-SHELL
+      slave.vm.provision "shell", inline: <<-SHELL
       sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
       sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
       sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
-      sudo yum update
+      sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+      sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+      sudo yum makecache && yum update
       sudo yum install python net-tools -y
       sudo systemctl restart sshd
+      echo 123456 | sudo passwd root --stdin
       sudo reboot
+      sudo route add default gw 192.168.137.1
       SHELL
       end
     end

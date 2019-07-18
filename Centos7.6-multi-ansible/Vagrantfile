@@ -28,11 +28,15 @@ Vagrant.configure("2") do |config|
     first.vm.provision "shell", inline: <<-SHELL
     sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
     sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
-    sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
+    sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
     sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
-    sudo yum update
-    sudo yum install python git vim python-pip net-tools -y
-    sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com 
+    sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+    echo 123456 | sudo passwd root --stdin
+    sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
+    sudo sed  -i "1aDNS=8.8.8.8" /etc/sysconfig/network
+    sudo yum makecache && yum update
+    sudo yum install python git python-pip vim net-tools -y
+    sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     sudo pip install ansible==2.6.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     sudo yum clean all
     sudo systemctl restart sshd
@@ -108,9 +112,13 @@ Vagrant.configure("2") do |config|
       sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
       sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
       sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
-      sudo yum update
-      sudo yum install python -y
+      sudo sed  -i "1aDNS=8.8.8.8" /etc/sysconfig/network
+      sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+      sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+      sudo yum makecache && yum update
+      sudo yum install python net-tools -y
       sudo systemctl restart sshd
+      echo 123456 | sudo passwd root --stdin
       sudo reboot
       sudo route add default gw 192.168.137.1
       SHELL
