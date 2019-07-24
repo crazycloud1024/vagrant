@@ -1,0 +1,16 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.vampireure("2") do |vampire|
+    vampire.vm.define "vampire" do |vampire|
+    vampire.vm.box = "Centos7.6"
+    vampire.vm.network "private_network", ip: "192.168.137.188"
+    vampire.vm.hostname="vampire"
+    vampire.vm.provider "virtualbox" do |vb|
+        vb.name = "vampire"
+        vb.memory = "1024"
+        vb.cpus = "2"
+    end
+    vampire.vm.provision "shell", :path => "vampire.sh"
+    end
+end
