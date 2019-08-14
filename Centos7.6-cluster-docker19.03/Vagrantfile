@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
 
     cluster.vm.provider "virtualbox" do |vb|
         vb.name = "cluster"
-        vb.memory = "1024"
+        vb.memory = "2048"
         vb.cpus = "2"
     end
     # View the documentation for the provider you are using for more
@@ -78,7 +78,7 @@ Vagrant.configure("2") do |config|
       #   vb.gui = true
       #
          vb.name = "slave#{i}"
-         vb.memory = "1024"
+         vb.memory = "2048"
          vb.cpus = "2"
        end
       #

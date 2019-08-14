@@ -3,12 +3,13 @@ sudo sed  -i "s/PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/
 sudo sed  -i "s/#UseDNS yes/UseDNS no/" /etc/ssh/sshd_config
 # 关闭selinux
 sudo sed  -i "s/SELINUX=enforcing/SELINUX=disabled/" /etc/selinux/config
-# 更换软件源 base epel
+# 更换软件源 base epel pypi清华源
 sudo mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
 sudo curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.cloud.tencent.com/repo/centos7_base.repo
 sudo mv /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel.repo.backup
 sudo curl -o /etc/yum.repos.d/epel.repo http://mirrors.cloud.tencent.com/repo/epel-7.repo
 sudo yum makecache && yum update
+sudo pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 # 修改root密码
 echo 123456 | sudo passwd root --stdin
 # 添加默认网关和DNS
