@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+  
+  config.vm.define "kubemaster" do |kubemaster|
+
+  kubemaster.vm.box = "Centos7.6"
+  kubemaster.disksize.size = "120GB"
+  kubemaster.vm.network "private_network", ip: "192.168.137.150"
+  kubemaster.vm.hostname="kubemaster"
+
+  kubemaster.vm.provider "virtualbox" do |vb|
+      vb.name = "kubemaster"
+      vb.memory = "3072"
+      vb.cpus = "2"
+  end
+
+  kubemaster.vm.provision "shell", :path => "master.sh"
+  end
+
+  (3..4).each do |i|
+    config.vm.define "kubenode#{i}" do |kubenode|
+
+    kubenode.vm.box = "Centos7.6"
+    kubenode.disksize.size = "120GB"
+
+    kubenode.vm.network "private_network", ip: "192.168.137.15#{i}"
+    kubenode.vm.hostname="kubenode#{i}"
+    kubenode.vm.provider "virtualbox" do |vb|
+        vb.name = "kubenode#{i}"
+        vb.memory = "3072"
+        vb.cpus = "2"
+      end
+     
+      kubenode.vm.provision "shell", :path => "node.sh"
+      end
+    end
+end
