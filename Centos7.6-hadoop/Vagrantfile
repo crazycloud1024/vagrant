@@ -1,0 +1,53 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    config.vm.define "hmaster" do |hmaster|
+
+    hmaster.vm.box = "Centos7.6"
+    hmaster.vm.network "private_network", ip: "192.168.137.120"
+    hmaster.vm.hostname="hmaster"
+
+    hmaster.vm.provider "virtualbox" do |vb|
+        vb.name = "hmaster"
+        vb.memory = "2014"
+        vb.cpus = "2"
+    end
+
+    hmaster.vm.provision "shell", :path => "master.sh"
+    end
+
+  (1..3).each do |i|
+    config.vm.define "hnode#{i}" do |hnode|
+
+      hnode.vm.box = "Centos7.6"
+      hnode.disksize.size = "120GB"
+
+      # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+      # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+      # Create a private network, which allows host-only access to the machine
+      # 仅主机 HostOnly 模式
+      hnode.vm.network "private_network", ip: "192.168.137.12#{i}"
+      # NAT 网络
+      # config.vm.network "public_network", ip: "172.16.10.10"
+
+      # config.vm.synced_folder "../data", "/vagrant_data"
+      hnode.vm.hostname="hnode#{i}"
+      # 共享目录
+      # hnode.vm.synced_folder "~/Desktop/share", "/home/vagrant/share"
+
+      hnode.vm.provider "virtualbox" do |vb|
+      #   # Display the Virtualnode GUI when booting the machine
+      #   vb.gui = true
+      #
+         vb.name = "hnode#{i}"
+         vb.memory = "2048"
+         vb.cpus = "2"
+       end
+  
+      hnode.vm.provision "shell", :path => "node.sh"
+      end
+    end
+end
