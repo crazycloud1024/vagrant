@@ -1,7 +1,10 @@
 # vagrant
 some vagrant config
 
-使用帮助：
+添加box帮助：
+ - vagrant box add $(下载的离线box文件) --name $boxname
+
+创建使用帮助：
 - vagrant ssh ： ssh连接(多台虚拟机 指定host)
 - vagrant suspend ： 挂起虚拟机
 - vagrant resume ： 启动挂起虚拟机
