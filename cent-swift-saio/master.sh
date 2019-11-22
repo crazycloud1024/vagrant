@@ -19,8 +19,23 @@ sudo sed  -i "1aGATEWAY=192.168.137.1" /etc/sysconfig/network
 sudo sed  -i "1aDNS=8.8.8.8" /etc/sysconfig/network
 # 安装
 sudo yum install python git python-pip vim net-tools zsh docker-ce-18.06.3.ce-3.el7 docker-compose -y
+sudo yum install -y curl gcc memcached rsync sqlite xfsprogs git-core \
+                 libffi-devel xinetd liberasurecode-devel \
+                 openssl-devel python-setuptools \
+                 python-coverage python-devel python-nose \
+                 python-simplejson pyxattr python-eventlet \
+                 python-swiftclient s3cmd \
+                 openstack-swift-doc \
+                 openstack-swift-account \
+                 openstack-swift-container \
+                 openstack-swift-object \
+                 openstack-swift-proxy \
+                 python-greenlet python-paste-deploy \
+                 python-netifaces python-pip python-dns \
+                 python-mock && \
+                 pip install -U setuptools -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+                 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 sudo pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
-sudo pip install ansible==2.6.12 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 # zsh安装
 sudo chsh -s /bin/zsh
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"

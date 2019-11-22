@@ -2,17 +2,19 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-    config.vm.define "swift" do |swift|
-    swift.vm.box = "Centos7.6"
-    swift.vm.network "private_network", ip: "192.168.137.140"
-    swift.vm.hostname="swift"
-    swift.vm.provider "virtualbox" do |vb|
-        vb.name = "swift"
+    config.vm.define "swiftSaio" do |swiftSaio|
+    swiftSaio.vm.box = "Centos7.6"
+    swiftSaio.disksize.size = "120GB"
+    swiftSaio.vm.network "private_network", ip: "192.168.137.140"
+    swiftSaio.vm.hostname="swiftSaio"
+    swiftSaio.vm.provider "virtualbox" do |vb|
+        vb.name = "swiftSaio"
         vb.memory = "3072"
         vb.cpus = "2"
+       
     end
     # View the documentation for the provider you are using for more
 
-    swift.vm.provision "shell", :path => "master.sh"
+    swiftSaio.vm.provision "shell", :path => "master.sh"
     end
 end

@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.define "microk8s" do |microk8s|
+
+    microk8s.vm.box = "ubuntu18"
+    microk8s.disksize.size = "120GB"
+    microk8s.vm.network "private_network", ip: "192.168.137.150"
+    microk8s.vm.hostname="microk8s"
+
+    # microk8s.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+    microk8s.vm.provider "virtualbox" do |vb|
+      vb.name = "microk8s"
+      vb.cpus = "4"
+      vb.memory = "4096"
+  end
+
+  microk8s.vm.provision "shell", :path => "shell.sh"
+end
+end
