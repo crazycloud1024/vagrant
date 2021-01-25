@@ -19,3 +19,6 @@ some vagrant config
     - save ${name} 保存快照
     - restore ${name} 恢复快照
     - delete ${name} 删除快照
+
+
+vagrant plugin install vagrant-vbguest --plugin-version 0.21
